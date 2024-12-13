@@ -3,70 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guessing Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        p {
-            margin: 15px 0;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result, .guesses {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        .guesses {
-            color: #555;
-            font-size: 0.9rem;
-        }
-    </style>
+    <title>Go Backend Demo</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Guessing Game</h1>
-        <p>Guess the number between 1 and 100!</p>
-        <input type="number" id="guessInput" placeholder="Enter your guess" min="1" max="100">
-        <button onclick="checkGuess()">Submit Guess</button>
-        <div class="result" id="resultMessage"></div>
-        <div class="guesses" id="previousGuesses"></div>
-    </div>
-    <script src="script.js"></script>
+    <h1>Frontend Page</h1>
+    <button id="fetchMessage">Fetch Message</button>
+    <p id="response"></p>
+
+    <script>
+        document.getElementById('fetchMessage').addEventListener('click', async () => {
+            const response = await fetch('http://localhost:8080/api');
+            const data = await response.json();
+            console.log(data)
+            document.getElementById('response').textContent = data.message;
+        });
+    </script>
 </body>
 </html>
