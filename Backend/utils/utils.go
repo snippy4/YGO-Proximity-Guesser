@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // CardSet represents the card set details
@@ -64,7 +66,90 @@ func GetCard(cardName string) string {
 		fmt.Printf("Found card: %+v\n", *found)
 	} else {
 		fmt.Printf("Card with name '%s' not found.\n", targetName)
+		return "No such card"
 	}
-	response, err := json.Marshal(*found)
+	response, _ := json.Marshal(*found)
 	return string(response)
+}
+
+func SearchCards(cardName string) string {
+	// Open the JSON file
+	file, err := os.Open("cards.json")
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Read the file contents
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	// Parse the JSON into the CardData struct
+	var cardData CardData
+	if err := json.Unmarshal(byteValue, &cardData); err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+
+	// Collect all cards containing cardName in their name
+	var matchedCards []Card
+	for _, card := range cardData.Data {
+		if strings.Contains(strings.ToLower(card.Name), strings.ToLower(cardName)) {
+			matchedCards = append(matchedCards, card)
+		}
+	}
+
+	// Return the result
+	if len(matchedCards) > 0 {
+		response, err := json.Marshal(matchedCards)
+		if err != nil {
+			log.Fatalf("Error marshalling matched cards: %v", err)
+		}
+		return string(response)
+	} else {
+		return "[]"
+	}
+}
+
+func FindValueByID(id string) string {
+	// Open the JSON file
+	if id == "26077387" {
+		return "CARD FOUND WOOO 🎉"
+	}
+	file, err := os.Open("26077387 sorted list.json") // Replace with your JSON file name
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Read the file contents
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	// Parse the JSON data into a map
+	var data map[string]float64
+	if err := json.Unmarshal(byteValue, &data); err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+
+	// Search for the ID in the keys
+	for key, value := range data {
+		ids := strings.Trim(key, "()") // Remove parentheses from the key
+		idParts := strings.Split(ids, ",")
+		if len(idParts) == 2 {
+			id1 := strings.TrimSpace(idParts[0])
+			id1 = strings.ReplaceAll(id1, "'", "")
+			id2 := strings.TrimSpace(idParts[1])
+			id2 = strings.ReplaceAll(id2, "'", "")
+			if id == id1 || id == id2 {
+				return strconv.FormatFloat(value, 'f', -1, 64)
+			}
+		}
+	}
+
+	// If no match is found
+	return "No matching value found"
 }

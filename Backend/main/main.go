@@ -4,33 +4,56 @@ import (
 	"Backend/utils"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"strconv"
 )
 
-// Data represents a structure for JSON responses
-type Data struct {
-	Message string `json:"message"`
+// Response structures
+type SuggestionResponse struct {
+	Suggestions []string `json:"suggestions"`
+}
+
+type SelectResponse struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 func main() {
-	// Serve static files (HTML, CSS, JS)
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
-
-	// API endpoint
-	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			data := Data{Message: utils.GetCard("Performage Plushfire")}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(data)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		suggestions := getSuggestions(query) // Replace with your logic
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(suggestions)
 	})
 
-	// Start the server
-	port := ":8080"
-	fmt.Printf("Server is running on http://localhost%s\n", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	http.HandleFunc("/select", func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		result := getResult(query) // Replace with your logic
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
+	http.ListenAndServe(":8080", nil)
+}
+
+// Replace this with your logic to generate suggestions
+func getSuggestions(query string) []string {
+	cardsList := make([]string, 0)
+	cards := utils.SearchCards(query)
+	cardsList = append(cardsList, cards)
+	return cardsList
+}
+
+// Replace this with your logic to return a key-value pair
+func getResult(query string) map[string]string {
+	cardsJSON := utils.SearchCards(query) // Call the modified function with query input
+
+	var cards []utils.Card
+	err := json.Unmarshal([]byte(cardsJSON), &cards)
+	if err != nil {
+		fmt.Println(err)
+	}
+	key := cards[0].Name
+	value := utils.FindValueByID(strconv.Itoa(cards[0].ID))
+	return map[string]string{"key": key, "value": value}
 }

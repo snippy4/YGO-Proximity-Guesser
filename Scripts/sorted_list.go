@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	input := "99984170"
+	input := "26077387"
 	// Read the JSON file
 	file, err := os.Open("proximity.json")
 	if err != nil {

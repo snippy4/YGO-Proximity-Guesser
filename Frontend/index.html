@@ -3,21 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Backend Demo</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Frontend Page</h1>
-    <button id="fetchMessage">Fetch Message</button>
-    <p id="response"></p>
-
+    <title>Prototype proxim guess</title>
     <script>
-        document.getElementById('fetchMessage').addEventListener('click', async () => {
-            const response = await fetch('http://localhost:8080/api');
-            const data = await response.json();
-            console.log(data)
-            document.getElementById('response').textContent = data.message;
+        let previousSearches = [];
+
+        async function onSearch(input) {
+            if (input.length > 0) {
+                const response = await fetch(`http://localhost:8080/search?q=${encodeURIComponent(input)}`);
+                const suggestions = await response.json();
+                const suggestionsDiv = document.getElementById('suggestions');
+                suggestionsDiv.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.textContent = suggestion;
+                    suggestionsDiv.appendChild(div);
+                });
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+        async function onEnter() {
+            const inputField = document.getElementById('search-bar');
+            const input = inputField.value;
+            if (input.length > 0) {
+                const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
+                const result = await response.json();
+
+                // Add to previous searches
+                previousSearches.push({ key: result.key, value: result.value });
+                previousSearches.sort((a, b) => a.value.localeCompare(b.value));
+
+                // Update the previous searches display
+                const previousSearchesDiv = document.getElementById('previous-searches');
+                previousSearchesDiv.innerHTML = '';
+                previousSearches.forEach(search => {
+                    const div = document.createElement('div');
+                    div.textContent = `${search.key}: ${search.value}`;
+                    previousSearchesDiv.appendChild(div);
+                });
+
+                document.getElementById('result').textContent = `${result.key}: ${result.value}`;
+                inputField.value = '';
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputField = document.getElementById('search-bar');
+            inputField.addEventListener('input', () => onSearch(inputField.value));
+            inputField.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    onEnter();
+                    event.preventDefault();
+                }
+            });
         });
     </script>
+</head>
+<body>
+    <h1>Guess Card</h1>
+    <input type="text" id="search-bar" placeholder="Type to search..." autocomplete="off">
+    <div id="suggestions" style="margin-top: 10px;"></div>
+    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    <h2>Previous Guesses</h2>
+    <div id="previous-searches" style="margin-top: 10px;"></div>
 </body>
 </html>
