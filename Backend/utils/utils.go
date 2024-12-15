@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -125,6 +126,7 @@ func FindValueByID(id string) string {
 
 	scanner := bufio.NewScanner(file)
 	// Search for the ID in the keys
+	place := 20
 	for scanner.Scan() {
 		key, value := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
 		ids := strings.Trim(key, "()") // Remove parentheses from the key
@@ -135,9 +137,13 @@ func FindValueByID(id string) string {
 			id2 := strings.TrimSpace(idParts[1])
 			id2 = strings.ReplaceAll(id2, "'", "")
 			if id == id1 || id == id2 {
+				if place >= 1 {
+					return strconv.Itoa(place)
+				}
 				return value
 			}
 		}
+		place--
 	}
 
 	// If no match is found

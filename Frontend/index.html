@@ -34,8 +34,22 @@
 
                 // Add to previous searches
                 ParsedValue = parseFloat(result.value)
+                display = ""
                 if(!isNaN(ParsedValue)){
-                    previousSearches.push({ key: result.key, value: ParsedValue});
+                    if (ParsedValue >= 1){
+                        display = 20 - ParsedValue + " card(s) away!"
+                    }else if (ParsedValue >= 0.8){
+                        display = "Flaming hot"
+                    }else if (ParsedValue >= 0.6){
+                        display = "Warm"
+                    }else if (ParsedValue >= 0.4){
+                        display = "Tepid"
+                    }else if (ParsedValue >= 0.2){
+                        display = "Cold"
+                    }else{
+                        display = "At least someone played these cards together?"
+                    }
+                    previousSearches.push({ key: result.key, value: ParsedValue, display : display});
                     previousSearches.sort((a, b) => b.value-a.value );                    
                 }
 
@@ -44,7 +58,7 @@
                 previousSearchesDiv.innerHTML = '';
                 previousSearches.forEach(search => {
                     const div = document.createElement('div');
-                    div.textContent = `${search.key}: ${search.value}`;
+                    div.textContent = `${search.key}: ${search.display}`;
                     previousSearchesDiv.appendChild(div);
                 });
 

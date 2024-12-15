@@ -77,7 +77,9 @@ func main() {
 
 	// Print the sorted results
 	writer := bufio.NewWriter(newfile)
-	for _, item := range sorted {
+	lines := len(sorted) - 1
+	for i, _ := range sorted {
+		item := sorted[lines-i]
 		fmt.Printf("%s: %.2f\n", item.Key, item.Value)
 		outline := fmt.Sprintf("%s: %.2f\n", item.Key, item.Value)
 		_, err := writer.WriteString(outline)
