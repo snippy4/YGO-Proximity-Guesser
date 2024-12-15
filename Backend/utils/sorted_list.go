@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bufio"
@@ -12,8 +12,7 @@ import (
 	"strings"
 )
 
-func main() {
-	input := "26077387"
+func Sorted_list(input string) {
 	// Read the JSON file
 	file, err := os.Open("proximity.json")
 	if err != nil {

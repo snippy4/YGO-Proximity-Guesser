@@ -113,12 +113,12 @@ func SearchCards(cardName string) string {
 	}
 }
 
-func FindValueByID(id string) string {
+func FindValueByID(id string, answer string) string {
 	// Open the JSON file
-	if id == "26077387" {
+	if id == answer {
 		return "CARD FOUND WOOO 🎉"
 	}
-	file, err := os.Open("26077387 sorted list.txt") // Replace with your JSON file name
+	file, err := os.Open(answer + " sorted list.txt") // Replace with your JSON file name
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}

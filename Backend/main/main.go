@@ -6,6 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
+)
+
+var (
+	current_daily string
+	mu            sync.Mutex
 )
 
 // Response structures
@@ -20,7 +26,7 @@ type SelectResponse struct {
 
 func main() {
 	go startHTTPServer()
-
+	go newRandomCard()
 	select {}
 }
 
@@ -60,6 +66,14 @@ func getResult(query string) map[string]string {
 		fmt.Println(err)
 	}
 	key := cards[0].Name
-	value := utils.FindValueByID(strconv.Itoa(cards[0].ID))
+	value := utils.FindValueByID(strconv.Itoa(cards[0].ID), current_daily)
 	return map[string]string{"key": key, "value": value}
+}
+
+func newRandomCard() {
+	mu.Lock()
+	new_card := utils.Random_node()
+	utils.Sorted_list(new_card)
+	current_daily = new_card
+	mu.Unlock()
 }
