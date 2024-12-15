@@ -23,6 +23,20 @@ def compute_relative_strength(graph, importance_metric='pagerank'):
     
     return relative_strengths
 
+def normalize_weights(weights):
+    # Extract all weight values
+    values = list(weights.values())
+    w_min = min(values)
+    w_max = max(values)
+    
+    # Avoid division by zero
+    if w_max == w_min:
+        return {key: 0.5 for key in weights}  # If all values are equal, normalize to 0.5
+    
+    # Normalize each weight
+    normalized = {key: value / w_max for key, value in weights.items()}
+    return normalized
+
 # Example usage
 G = nx.Graph()
 with open("output.csv") as network:

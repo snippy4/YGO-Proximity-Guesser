@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"strings"
@@ -21,7 +23,7 @@ func main() {
 
 	// Parse the JSON into a map
 	var data map[string]float64
-	bytes, err := ioutil.ReadAll(file)
+	bytes, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatalf("Failed to read file: %v", err)
 	}
@@ -38,7 +40,18 @@ func main() {
 			filtered[key] = value
 		}
 	}
-
+	w_max := 0.0
+	w_min := math.MaxFloat64
+	for _, value := range filtered {
+		if value > w_max {
+			w_max = value
+		}
+		if value < w_min {
+			w_min = value
+		}
+	}
+	w_max = math.Log(w_max)
+	w_min = math.Log(w_min)
 	// Convert the filtered map to a slice of key-value pairs for sorting
 	type kv struct {
 		Key   string
@@ -47,7 +60,7 @@ func main() {
 
 	var sorted []kv
 	for k, v := range filtered {
-		sorted = append(sorted, kv{Key: k, Value: v})
+		sorted = append(sorted, kv{Key: k, Value: (math.Log(v) - w_min) / (w_max - w_min)})
 	}
 
 	// Sort the slice by values
@@ -55,27 +68,28 @@ func main() {
 		return sorted[i].Value < sorted[j].Value
 	})
 
-	// Print the sorted results
-	fmt.Println("Sorted results:")
-	for _, item := range sorted {
-		fmt.Printf("%s: %.2f\n", item.Key, item.Value)
-	}
-
-	newfile, err := os.Create(input + " sorted list.json")
+	newfile, err := os.Create(input + " sorted list.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	defer newfile.Close()
 
-	jsonData, err := json.MarshalIndent(filtered, "", "  ")
-	if err != nil {
-		log.Fatalf("Failed to marshal JSON: %v", err)
+	// Print the sorted results
+	writer := bufio.NewWriter(newfile)
+	for _, item := range sorted {
+		fmt.Printf("%s: %.2f\n", item.Key, item.Value)
+		outline := fmt.Sprintf("%s: %.2f\n", item.Key, item.Value)
+		_, err := writer.WriteString(outline)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
-
-	_, err = newfile.Write(jsonData)
+	err = writer.Flush()
 	if err != nil {
-		log.Fatalf("Failed to write JSON to file: %v", err)
+		fmt.Println(err)
+		return
 	}
 
 	fmt.Println("Filtered map written to filtered_output.json")

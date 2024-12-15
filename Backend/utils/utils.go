@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -117,26 +117,16 @@ func FindValueByID(id string) string {
 	if id == "26077387" {
 		return "CARD FOUND WOOO 🎉"
 	}
-	file, err := os.Open("26077387 sorted list.json") // Replace with your JSON file name
+	file, err := os.Open("26077387 sorted list.txt") // Replace with your JSON file name
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Read the file contents
-	byteValue, err := io.ReadAll(file)
-	if err != nil {
-		log.Fatalf("Error reading file: %v", err)
-	}
-
-	// Parse the JSON data into a map
-	var data map[string]float64
-	if err := json.Unmarshal(byteValue, &data); err != nil {
-		log.Fatalf("Error unmarshalling JSON: %v", err)
-	}
-
+	scanner := bufio.NewScanner(file)
 	// Search for the ID in the keys
-	for key, value := range data {
+	for scanner.Scan() {
+		key, value := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
 		ids := strings.Trim(key, "()") // Remove parentheses from the key
 		idParts := strings.Split(ids, ",")
 		if len(idParts) == 2 {
@@ -145,7 +135,7 @@ func FindValueByID(id string) string {
 			id2 := strings.TrimSpace(idParts[1])
 			id2 = strings.ReplaceAll(id2, "'", "")
 			if id == id1 || id == id2 {
-				return strconv.FormatFloat(value, 'f', -1, 64)
+				return value
 			}
 		}
 	}
