@@ -30,9 +30,14 @@
                 const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
                 const result = await response.json();
 
+
+
                 // Add to previous searches
-                previousSearches.push({ key: result.key, value: result.value });
-                previousSearches.sort((a, b) => a.value.localeCompare(b.value));
+                ParsedValue = parseFloat(result.value)
+                if(!isNaN(ParsedValue)){
+                    previousSearches.push({ key: result.key, value: ParsedValue});
+                    previousSearches.sort((a, b) => b.value-a.value );                    
+                }
 
                 // Update the previous searches display
                 const previousSearchesDiv = document.getElementById('previous-searches');
@@ -42,6 +47,7 @@
                     div.textContent = `${search.key}: ${search.value}`;
                     previousSearchesDiv.appendChild(div);
                 });
+
 
                 document.getElementById('result').textContent = `${result.key}: ${result.value}`;
                 inputField.value = '';
