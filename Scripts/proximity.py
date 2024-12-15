@@ -49,6 +49,4 @@ relative_strengths_str = {str(k): v for k, v in relative_strengths.items()}
 with open("proximity.json", "w") as f:
     f.write(json.dumps(relative_strengths_str))
 
-maxx_c = {key: value for key, value in relative_strengths.items() if '26077387' in key}
-sorted_dict = dict(sorted(maxx_c.items(), key=lambda item: item[1]))
-print(sorted_dict)
+

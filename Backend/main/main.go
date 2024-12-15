@@ -19,6 +19,12 @@ type SelectResponse struct {
 }
 
 func main() {
+	go startHTTPServer()
+
+	select {}
+}
+
+func startHTTPServer() {
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("q")
 		suggestions := getSuggestions(query) // Replace with your logic
