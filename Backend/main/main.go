@@ -25,9 +25,8 @@ type SelectResponse struct {
 }
 
 func main() {
-	current_daily = "26077387"
 	go startHTTPServer()
-	//go newRandomCard()
+	go newRandomCard()
 	select {}
 }
 
@@ -59,6 +58,7 @@ func getSuggestions(query string) []string {
 
 // Replace this with your logic to return a key-value pair
 func getResult(query string) map[string]string {
+	mu.Lock()
 	cardsJSON := utils.SearchCards(query) // Call the modified function with query input
 
 	var cards []utils.Card
@@ -74,6 +74,7 @@ func getResult(query string) map[string]string {
 	}
 	key := card.Name
 	value := utils.FindValueByID(strconv.Itoa(card.ID), current_daily)
+	mu.Unlock()
 	return map[string]string{"key": key, "value": value, "id": strconv.Itoa(card.ID)}
 }
 

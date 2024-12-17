@@ -71,7 +71,7 @@ func Random_node() (node string) {
 
 	// Metropolis walk
 	fmt.Println(current_node)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 30; i++ {
 		edges := make([]string, 0)
 		for edge, _ := range data {
 			u, v := strings.ReplaceAll(strings.Split(strings.Trim(edge, "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edge, "()"), ",")[1], "'", "")
@@ -79,7 +79,8 @@ func Random_node() (node string) {
 				edges = append(edges, edge)
 			}
 		}
-		for candidate_edge, _ := range edges {
+		for i, _ := range edges {
+			candidate_edge := rand.Intn(len(edges) - 1 - i)
 			u, v := strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "()"), ",")[1], "'", "")
 			next := ""
 			if u == current_node {
@@ -90,12 +91,10 @@ func Random_node() (node string) {
 			prob := weightedQuadratic(degree[next], max_deg)
 			randprob := rand.Float64()
 			if randprob < prob {
-				fmt.Println(prob)
 				current_node = next
 				break
 			}
 		}
-		fmt.Println(current_node)
 	}
 	current_node = strings.ReplaceAll(current_node, " ", "")
 	fmt.Println(current_node)

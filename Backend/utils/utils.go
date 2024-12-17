@@ -116,7 +116,7 @@ func SearchCards(cardName string) string {
 func FindValueByID(id string, answer string) string {
 	// Open the JSON file
 	if id == answer {
-		return "CARD FOUND WOOO 🎉"
+		return "Correct"
 	}
 	file, err := os.Open(answer + " sorted list.txt") // Replace with your JSON file name
 	if err != nil {

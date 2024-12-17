@@ -79,7 +79,13 @@
 
                     // Add to previous searches
                     let ParsedValue = parseFloat(result.value);
-                    let display = "No connection :(" 
+                    let display = "No connection :(";
+                    console.log(result.value)
+                    if (result.value === "Correct") {
+                            display = "Correct!";
+                            showModal(result.key, result.id); // Trigger modal
+                            console.log("woo")
+                    } 
                     if (!isNaN(ParsedValue)) {
                         if (ParsedValue == 20) {
                             display = "The Closest Card!";
@@ -102,7 +108,7 @@
                     // Update the "Last Guess" display
                     const lastGuessDiv = document.getElementById('last-guess');
                     lastGuessDiv.innerHTML = '';
-                    const latestGuess = {key: result.key, id: result.id, value:  ParsedValue, display: display}; // Most recent guess
+                    const latestGuess = { key: result.key, id: result.id, value: ParsedValue, display: display }; // Most recent guess
                     if (latestGuess) {
                         const lastGuessContainer = createSearchDisplay(latestGuess);
                         lastGuessDiv.appendChild(lastGuessContainer);
@@ -123,6 +129,26 @@
                     console.error("Error fetching results:", error);
                 }
             }
+        }
+
+        // Function to show the modal
+        function showModal(cardName, cardId) {
+            const modal = document.getElementById('congrats-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.innerHTML = `
+                <img src="https://card.yugioh-api.com/${cardId}/image" alt="${cardName}">
+                <h2>Congratulations!</h2>
+                <p>You guessed today's card: <strong>${cardName}</strong></p>
+                <button class="close-btn" onclick="closeModal()">Close</button>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('congrats-modal');
+            modal.style.display = 'none';
         }
 
         // Function to create the search display container
@@ -210,5 +236,10 @@
     <div id="last-guess" style="margin-top: 10px;"></div>
     <h2>Previous Guesses</h2>
     <div id="previous-searches" style="margin-top: 10px;"></div>
+    <div id="congrats-modal" class="modal">
+        <div id="modal-content" class="modal-content">
+            <!-- Content populated dynamically -->
+        </div>
+    </div>
 </body>
 </html>
