@@ -3,71 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prototype proxim guess</title>
+    <title>Prototype Proxim Guess</title>
     <script>
         let previousSearches = [];
 
         async function onSearch(input) {
             if (input.length > 0) {
-                const response = await fetch(`http://localhost:8080/search?q=${encodeURIComponent(input)}`);
-                const suggestions = await response.json();
-                const suggestionsDiv = document.getElementById('suggestions');
-                suggestionsDiv.innerHTML = '';
-                suggestions.forEach(suggestion => {
-                    const div = document.createElement('div');
-                    div.textContent = suggestion;
-                    suggestionsDiv.appendChild(div);
-                });
+                try {
+                    const response = await fetch(`http://localhost:8080/search?q=${encodeURIComponent(input)}`);
+                    let suggestions = await response.json();
+
+                    // Check if suggestions is an array with a stringified JSON inside
+                    if (Array.isArray(suggestions) && typeof suggestions[0] === "string") {
+                        suggestions = JSON.parse(suggestions[0]); // Parse the inner JSON string
+                    }
+
+                    if (!Array.isArray(suggestions)) {
+                        console.error("Invalid suggestions format:", suggestions);
+                        return;
+                    }
+
+                    const suggestionsDiv = document.getElementById('suggestions');
+                    suggestionsDiv.innerHTML = ''; // Clear previous suggestions
+
+                    // Display up to 5 suggestions with card name and images
+                    suggestions.slice(0, 5).forEach(suggestion => {
+                        const cardContainer = document.createElement('div');
+                        cardContainer.style.display = 'flex';
+                        cardContainer.style.alignItems = 'center';
+                        cardContainer.style.margin = '5px 0';
+                        cardContainer.style.border = '1px solid #ddd';
+                        cardContainer.style.padding = '5px';
+                        cardContainer.style.borderRadius = '5px';
+
+                        // Card Image
+                        const img = document.createElement('img');
+                        img.src = `https://card.yugioh-api.com/${suggestion.id}/image`;
+                        img.alt = suggestion.name;
+                        img.style.width = '50px';
+                        img.style.height = '70px';
+                        img.style.marginRight = '10px';
+
+                        // Card Button
+                        const button = document.createElement('button');
+                        button.textContent = suggestion.name;
+                        button.style.flexGrow = '1';
+                        button.style.padding = '10px';
+                        button.style.cursor = 'pointer';
+                        button.onclick = () => {
+                            document.getElementById('search-bar').value = suggestion.name;
+                            onEnter(); // Trigger the search logic
+                        };
+
+                        cardContainer.appendChild(img);
+                        cardContainer.appendChild(button);
+                        suggestionsDiv.appendChild(cardContainer);
+                    });
+                } catch (error) {
+                    console.error("Error fetching or parsing suggestions:", error);
+                }
             } else {
                 document.getElementById('suggestions').innerHTML = '';
             }
         }
 
+
+
         async function onEnter() {
-            const inputField = document.getElementById('search-bar');
-            const input = inputField.value;
-            if (input.length > 0) {
-                const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
-                const result = await response.json();
+    const inputField = document.getElementById('search-bar');
+    const input = inputField.value;
 
+    if (input.length > 0) {
+        try {
+            const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
+            const result = await response.json();
 
-
-                // Add to previous searches
-                ParsedValue = parseFloat(result.value)
-                display = ""
-                if(!isNaN(ParsedValue)){
-                    if (ParsedValue >= 1){
-                        display = 20 - ParsedValue + " card(s) away!"
-                    }else if (ParsedValue >= 0.8){
-                        display = "Flaming hot"
-                    }else if (ParsedValue >= 0.6){
-                        display = "Warm"
-                    }else if (ParsedValue >= 0.4){
-                        display = "Tepid"
-                    }else if (ParsedValue >= 0.2){
-                        display = "Cold"
-                    }else{
-                        display = "At least someone played these cards together?"
-                    }
-                    previousSearches.push({ key: result.key, value: ParsedValue, display : display});
-                    previousSearches.sort((a, b) => b.value-a.value );                    
+            // Add to previous searches
+            let ParsedValue = parseFloat(result.value);
+            let display = "";
+            if (!isNaN(ParsedValue)) {
+                if (ParsedValue >= 1) {
+                    display = 20 - ParsedValue + " card(s) away!";
+                } else if (ParsedValue >= 0.8) {
+                    display = "Flaming hot";
+                } else if (ParsedValue >= 0.6) {
+                    display = "Warm";
+                } else if (ParsedValue >= 0.4) {
+                    display = "Tepid";
+                } else if (ParsedValue >= 0.2) {
+                    display = "Cold";
+                } else {
+                    display = "At least someone played these cards together?";
                 }
-
-                // Update the previous searches display
-                const previousSearchesDiv = document.getElementById('previous-searches');
-                previousSearchesDiv.innerHTML = '';
-                previousSearches.forEach(search => {
-                    const div = document.createElement('div');
-                    div.textContent = `${search.key}: ${search.display}`;
-                    previousSearchesDiv.appendChild(div);
-                });
-
-
-                document.getElementById('result').textContent = `${result.key}: ${result.value}`;
-                inputField.value = '';
-                document.getElementById('suggestions').innerHTML = '';
+                console.log(result)
+                previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
+                previousSearches.sort((a, b) => b.value - a.value);
             }
+
+            // Update the previous searches display
+            const previousSearchesDiv = document.getElementById('previous-searches');
+            previousSearchesDiv.innerHTML = '';
+            previousSearches.forEach(search => {
+                console.log(search)
+                const container = document.createElement('div');
+                container.style.display = 'flex';
+                container.style.alignItems = 'center';
+                container.style.marginBottom = '10px';
+
+                // Card Image
+                const img = document.createElement('img');
+                img.src = `https://card.yugioh-api.com/${search.id}/image`;
+                img.alt = search.key;
+                img.style.width = '50px';
+                img.style.height = '70px';
+                img.style.marginRight = '10px';
+                img.style.border = '1px solid #ddd';
+                img.style.borderRadius = '5px';
+
+                // Text Information
+                const text = document.createElement('div');
+                text.textContent = `${search.key}: ${search.display}`;
+                text.style.marginBottom = '5px';
+                text.style.flex = '1';
+
+                // Progress Bar
+                const progressBar = document.createElement('div');
+                progressBar.style.width = '100%';
+                progressBar.style.height = '20px';
+                progressBar.style.backgroundColor = '#ddd';
+                progressBar.style.borderRadius = '10px';
+                progressBar.style.overflow = 'hidden';
+
+                const progressFill = document.createElement('div');
+                progressFill.style.height = '100%';
+                progressFill.style.width = `${search.value * 100}%`; // Fill percentage
+                progressFill.style.backgroundColor = getColor(search.value); // Get color based on value
+                progressFill.style.transition = 'width 0.5s ease'; // Smooth animation
+
+                progressBar.appendChild(progressFill);
+
+                // Append components to container
+                container.appendChild(img);
+                const textAndBar = document.createElement('div');
+                textAndBar.style.flex = '1';
+                textAndBar.appendChild(text);
+                textAndBar.appendChild(progressBar);
+
+                container.appendChild(textAndBar);
+                previousSearchesDiv.appendChild(container);
+            });
+
+            document.getElementById('result').textContent = `${result.key}: ${result.value}`;
+            inputField.value = '';
+            document.getElementById('suggestions').innerHTML = '';
+        } catch (error) {
+            console.error("Error fetching results:", error);
         }
+    }
+}
+
+// Function to determine color based on value
+function getColor(value) {
+    // Transition from red (0) to green (1)
+    const red = Math.floor((1 - value) * 255);
+    const green = Math.floor(value * 255);
+    return `rgb(${red}, ${green}, 0)`;
+}
+
 
         document.addEventListener('DOMContentLoaded', () => {
             const inputField = document.getElementById('search-bar');

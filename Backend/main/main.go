@@ -65,9 +65,15 @@ func getResult(query string) map[string]string {
 	if err != nil {
 		fmt.Println(err)
 	}
-	key := cards[0].Name
-	value := utils.FindValueByID(strconv.Itoa(cards[0].ID), current_daily)
-	return map[string]string{"key": key, "value": value}
+	var card utils.Card
+	for _, cardselect := range cards {
+		if cardselect.Name == query {
+			card = cardselect
+		}
+	}
+	key := card.Name
+	value := utils.FindValueByID(strconv.Itoa(card.ID), current_daily)
+	return map[string]string{"key": key, "value": value, "id": strconv.Itoa(card.ID)}
 }
 
 func newRandomCard() {
