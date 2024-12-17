@@ -25,8 +25,9 @@ type SelectResponse struct {
 }
 
 func main() {
+	current_daily = "26077387"
 	go startHTTPServer()
-	go newRandomCard()
+	//go newRandomCard()
 	select {}
 }
 

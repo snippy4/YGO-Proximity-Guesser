@@ -12,8 +12,8 @@ import (
 )
 
 func weightedQuadratic(x, max float64) float64 {
-	center := 0.65 * max
-	scale := 0.75 * max * 0.95
+	center := 0.55 * max
+	scale := 0.75 * max * 0.6
 
 	// Quadratic formula
 	return math.Max(0, 1-math.Pow((x-center)/scale, 2))
@@ -71,7 +71,7 @@ func Random_node() (node string) {
 
 	// Metropolis walk
 	fmt.Println(current_node)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 20; i++ {
 		edges := make([]string, 0)
 		for edge, _ := range data {
 			u, v := strings.ReplaceAll(strings.Split(strings.Trim(edge, "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edge, "()"), ",")[1], "'", "")
@@ -79,18 +79,21 @@ func Random_node() (node string) {
 				edges = append(edges, edge)
 			}
 		}
-		candidate_edge := rand.Intn(len(edges) - 1)
-		u, v := strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "()"), ",")[1], "'", "")
-		next := ""
-		if u == current_node {
-			next = v
-		} else {
-			next = u
-		}
-		prob := weightedQuadratic(degree[next], max_deg)
-		randprob := rand.Float64()
-		if randprob < prob {
-			current_node = next
+		for candidate_edge, _ := range edges {
+			u, v := strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edges[candidate_edge], "()"), ",")[1], "'", "")
+			next := ""
+			if u == current_node {
+				next = v
+			} else {
+				next = u
+			}
+			prob := weightedQuadratic(degree[next], max_deg)
+			randprob := rand.Float64()
+			if randprob < prob {
+				fmt.Println(prob)
+				current_node = next
+				break
+			}
 		}
 		fmt.Println(current_node)
 	}

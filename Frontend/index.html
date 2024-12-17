@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prototype Proxim Guess</title>
+    <link rel="stylesheet" href="styles.css">
     <script>
         let previousSearches = [];
 
@@ -67,109 +68,121 @@
             }
         }
 
-
-
         async function onEnter() {
-    const inputField = document.getElementById('search-bar');
-    const input = inputField.value;
+            const inputField = document.getElementById('search-bar');
+            const input = inputField.value;
 
-    if (input.length > 0) {
-        try {
-            const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
-            const result = await response.json();
+            if (input.length > 0) {
+                try {
+                    const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
+                    const result = await response.json();
 
-            // Add to previous searches
-            let ParsedValue = parseFloat(result.value);
-            let display = "";
-            if (!isNaN(ParsedValue)) {
-                if (ParsedValue >= 1) {
-                    display = 20 - ParsedValue + " card(s) away!";
-                } else if (ParsedValue >= 0.8) {
-                    display = "Flaming hot";
-                } else if (ParsedValue >= 0.6) {
-                    display = "Warm";
-                } else if (ParsedValue >= 0.4) {
-                    display = "Tepid";
-                } else if (ParsedValue >= 0.2) {
-                    display = "Cold";
-                } else {
-                    display = "At least someone played these cards together?";
+                    // Add to previous searches
+                    let ParsedValue = parseFloat(result.value);
+                    let display = "No connection :(" 
+                    if (!isNaN(ParsedValue)) {
+                        if (ParsedValue == 20) {
+                            display = "The Closest Card!";
+                        } else if (ParsedValue >= 1) {
+                            display = 20 - ParsedValue + " card(s) away!";
+                        } else if (ParsedValue >= 0.8) {
+                            display = "Flaming hot";
+                        } else if (ParsedValue >= 0.6) {
+                            display = "Warm";
+                        } else if (ParsedValue >= 0.4) {
+                            display = "Tepid";
+                        } else if (ParsedValue >= 0.2) {
+                            display = "Cold";
+                        } else {
+                            display = "At least someone played these cards together?";
+                        }
+                        previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
+                    }
+
+                    // Update the "Last Guess" display
+                    const lastGuessDiv = document.getElementById('last-guess');
+                    lastGuessDiv.innerHTML = '';
+                    const latestGuess = {key: result.key, id: result.id, value:  ParsedValue, display: display}; // Most recent guess
+                    if (latestGuess) {
+                        const lastGuessContainer = createSearchDisplay(latestGuess);
+                        lastGuessDiv.appendChild(lastGuessContainer);
+                    }
+
+                    // Update the previous searches display
+                    previousSearches.sort((a, b) => b.value - a.value);
+                    const previousSearchesDiv = document.getElementById('previous-searches');
+                    previousSearchesDiv.innerHTML = '';
+                    previousSearches.forEach(search => {
+                        const searchContainer = createSearchDisplay(search);
+                        previousSearchesDiv.appendChild(searchContainer);
+                    });
+
+                    inputField.value = '';
+                    document.getElementById('suggestions').innerHTML = '';
+                } catch (error) {
+                    console.error("Error fetching results:", error);
                 }
-                console.log(result)
-                previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
-                previousSearches.sort((a, b) => b.value - a.value);
             }
-
-            // Update the previous searches display
-            const previousSearchesDiv = document.getElementById('previous-searches');
-            previousSearchesDiv.innerHTML = '';
-            previousSearches.forEach(search => {
-                console.log(search)
-                const container = document.createElement('div');
-                container.style.display = 'flex';
-                container.style.alignItems = 'center';
-                container.style.marginBottom = '10px';
-
-                // Card Image
-                const img = document.createElement('img');
-                img.src = `https://card.yugioh-api.com/${search.id}/image`;
-                img.alt = search.key;
-                img.style.width = '50px';
-                img.style.height = '70px';
-                img.style.marginRight = '10px';
-                img.style.border = '1px solid #ddd';
-                img.style.borderRadius = '5px';
-
-                // Text Information
-                const text = document.createElement('div');
-                text.textContent = `${search.key}: ${search.display}`;
-                text.style.marginBottom = '5px';
-                text.style.flex = '1';
-
-                // Progress Bar
-                const progressBar = document.createElement('div');
-                progressBar.style.width = '100%';
-                progressBar.style.height = '20px';
-                progressBar.style.backgroundColor = '#ddd';
-                progressBar.style.borderRadius = '10px';
-                progressBar.style.overflow = 'hidden';
-
-                const progressFill = document.createElement('div');
-                progressFill.style.height = '100%';
-                progressFill.style.width = `${search.value * 100}%`; // Fill percentage
-                progressFill.style.backgroundColor = getColor(search.value); // Get color based on value
-                progressFill.style.transition = 'width 0.5s ease'; // Smooth animation
-
-                progressBar.appendChild(progressFill);
-
-                // Append components to container
-                container.appendChild(img);
-                const textAndBar = document.createElement('div');
-                textAndBar.style.flex = '1';
-                textAndBar.appendChild(text);
-                textAndBar.appendChild(progressBar);
-
-                container.appendChild(textAndBar);
-                previousSearchesDiv.appendChild(container);
-            });
-
-            document.getElementById('result').textContent = `${result.key}: ${result.value}`;
-            inputField.value = '';
-            document.getElementById('suggestions').innerHTML = '';
-        } catch (error) {
-            console.error("Error fetching results:", error);
         }
-    }
-}
 
-// Function to determine color based on value
-function getColor(value) {
-    // Transition from red (0) to green (1)
-    const red = Math.floor((1 - value) * 255);
-    const green = Math.floor(value * 255);
-    return `rgb(${red}, ${green}, 0)`;
-}
+        // Function to create the search display container
+        function createSearchDisplay(search) {
+            const container = document.createElement('div');
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.marginBottom = '10px';
 
+            // Card Image
+            const img = document.createElement('img');
+            img.src = `https://card.yugioh-api.com/${search.id}/image`;
+            img.alt = search.key;
+            img.style.width = '50px';
+            img.style.height = '70px';
+            img.style.marginRight = '10px';
+            img.style.border = '1px solid #ddd';
+            img.style.borderRadius = '5px';
+
+            // Text Information
+            const text = document.createElement('div');
+            text.textContent = `${search.key}: ${search.display}`;
+            text.style.marginBottom = '5px';
+            text.style.flex = '1';
+
+            // Progress Bar
+            const progressBar = document.createElement('div');
+            progressBar.style.width = '100%';
+            progressBar.style.height = '20px';
+            progressBar.style.backgroundColor = '#ddd';
+            progressBar.style.borderRadius = '10px';
+            progressBar.style.overflow = 'hidden';
+
+            const progressFill = document.createElement('div');
+            progressFill.style.height = '100%';
+            progressFill.style.width = `${search.value * 100}%`; // Fill percentage
+            progressFill.style.backgroundColor = getColor(search.value); // Get color based on value
+            progressFill.style.transition = 'width 0.5s ease'; // Smooth animation
+
+            progressBar.appendChild(progressFill);
+
+            // Append components to container
+            container.appendChild(img);
+            const textAndBar = document.createElement('div');
+            textAndBar.style.flex = '1';
+            textAndBar.appendChild(text);
+            textAndBar.appendChild(progressBar);
+
+            container.appendChild(textAndBar);
+
+            return container;
+        }
+
+        // Function to determine color based on value
+        function getColor(value) {
+            // Transition from red (0) to green (1)
+            const red = Math.floor((1 - value) * 255);
+            const green = Math.floor(value * 255);
+            return `rgb(${red}, ${green}, 0)`;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const inputField = document.getElementById('search-bar');
@@ -184,10 +197,17 @@ function getColor(value) {
     </script>
 </head>
 <body>
+    <nav >
+        <a href="index.html" >Home</a>
+        <a href="how-to-play.html" >How to Play</a>
+        <a href="how-it-works.html">How It Works</a>
+    </nav>
+
     <h1>Guess Card</h1>
     <input type="text" id="search-bar" placeholder="Type to search..." autocomplete="off">
     <div id="suggestions" style="margin-top: 10px;"></div>
-    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    <h2>Last Guess</h2>
+    <div id="last-guess" style="margin-top: 10px;"></div>
     <h2>Previous Guesses</h2>
     <div id="previous-searches" style="margin-top: 10px;"></div>
 </body>
