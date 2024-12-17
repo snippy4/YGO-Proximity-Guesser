@@ -62,8 +62,8 @@ def visualize_graph(G, node_id, output_file=None):
 def main(input_csv, node_id, output_file=None):
     edges = load_edge_list(input_csv)
     G = build_graph(edges)
-    subgraph = filter_graph(G, node_id)
-    visualize_graph(subgraph, node_id, output_file)
+    #subgraph = filter_graph(G, node_id)
+    visualize_graph(G, node_id, output_file)
 
 # Example usage
 # Replace 'output.csv' with your edge list file
