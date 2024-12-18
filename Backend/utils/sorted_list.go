@@ -67,7 +67,7 @@ func Sorted_list(input string) {
 		return sorted[i].Value < sorted[j].Value
 	})
 
-	newfile, err := os.Create(input + " sorted list.txt")
+	newfile, err := os.Create("data/" + input + " sorted list.txt")
 	if err != nil {
 		fmt.Println(err)
 		return

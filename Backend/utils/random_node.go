@@ -12,7 +12,7 @@ import (
 )
 
 func weightedQuadratic(x, max float64) float64 {
-	center := 0.55 * max
+	center := 0.45 * max
 	scale := 0.75 * max * 0.6
 
 	// Quadratic formula
@@ -91,6 +91,7 @@ func Random_node() (node string) {
 			prob := weightedQuadratic(degree[next], max_deg)
 			randprob := rand.Float64()
 			if randprob < prob {
+				fmt.Println(next)
 				current_node = next
 				break
 			}

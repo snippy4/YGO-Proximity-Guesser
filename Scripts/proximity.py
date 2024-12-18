@@ -1,5 +1,6 @@
 import networkx as nx
 import json
+import math
 
 def compute_relative_strength(graph, importance_metric='pagerank'):
     # Compute node importance based on the chosen metric
@@ -18,7 +19,7 @@ def compute_relative_strength(graph, importance_metric='pagerank'):
         weight = data.get('weight', 1.0)
         imp_u = importance[u]
         imp_v = importance[v]
-        relative_strength = weight / ((imp_u + imp_v)*(imp_u + imp_v))  # Example formula
+        relative_strength = weight / ((imp_u + imp_v)**1.5)  # Example formula
         relative_strengths[(u, v)] = relative_strength
     
     return relative_strengths

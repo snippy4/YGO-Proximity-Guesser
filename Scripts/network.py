@@ -11,14 +11,23 @@ def load_json(file_path):
 # Build the co-occurrence matrix
 def build_co_occurrence_matrix(decks):
     co_occurrence = defaultdict(lambda: defaultdict(int))
-    
+    blacklist = ["10000000", "10000010", "10000020", "14315573", "55144522", "4206964", "69890967", "32491822", "6007213",
+                 "71625222", "70781052", "62279055", "340521"]
+    filtered = 0
     for deck in decks:
+        skip = False
         cards = deck['cards']
+        for card in blacklist:
+            if card in cards:
+                skip = True
         # Generate all pair combinations of cards in the deck
-        for card1, card2 in combinations(cards, 2):
+        if skip:
+            filtered += 1
+            continue
+        for card1, card2 in combinations(list(set(cards)), 2):
             co_occurrence[card1][card2] += 1
             co_occurrence[card2][card1] += 1  # Since it's undirected
-    
+    print(f'filtered {filtered} decks')
     return co_occurrence
 
 # Save the network as an edge list

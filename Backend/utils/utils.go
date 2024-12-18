@@ -118,7 +118,7 @@ func FindValueByID(id string, answer string) string {
 	if id == answer {
 		return "Correct"
 	}
-	file, err := os.Open(answer + " sorted list.txt") // Replace with your JSON file name
+	file, err := os.Open("data/" + answer + " sorted list.txt") // Replace with your JSON file name
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
