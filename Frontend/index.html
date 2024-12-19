@@ -80,7 +80,6 @@
                     // Add to previous searches
                     let ParsedValue = parseFloat(result.value);
                     let display = "No connection :(";
-                    console.log(result.value)
                     if (result.value === "Correct") {
                             display = "Correct!";
                             showModal(result.key, result.id); // Trigger modal
@@ -102,7 +101,9 @@
                         } else {
                             display = "At least someone played these cards together?";
                         }
-                        previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
+                        if (!(previousSearches.some(e => e.id == result.id))){
+                            previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
+                        }
                     }
 
                     // Update the "Last Guess" display
