@@ -83,7 +83,6 @@
                     if (result.value === "Correct") {
                             display = "Correct!";
                             showModal(result.key, result.id); // Trigger modal
-                            console.log("woo")
                     } 
                     if (!isNaN(ParsedValue)) {
                         if (ParsedValue == 20) {
@@ -211,15 +210,36 @@
             return `rgb(${red}, ${green}, 0)`;
         }
 
+        function initializeDailyResetNotification() {
+            const now = new Date();
+            const nextReset = new Date();
+            nextReset.setUTCHours(6, 0, 0, 0);
+            if (now > nextReset) {
+                nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+            }
+
+            const timeUntilReset = nextReset - now;
+
+            setTimeout(() => {
+                alert("The daily card has reset! The page will now refresh so that guesses accurately reflect the new card.");
+
+                 location.reload();
+
+                // Set up the next notification
+                initializeDailyResetNotification();
+            }, timeUntilReset);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const inputField = document.getElementById('search-bar');
             inputField.addEventListener('input', () => onSearch(inputField.value));
             inputField.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
-                    onEnter();
+                    //onEnter();
                     event.preventDefault();
                 }
             });
+            initializeDailyResetNotification();
         });
     </script>
 </head>

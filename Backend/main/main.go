@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 )
 
 var (
@@ -25,8 +26,9 @@ type SelectResponse struct {
 }
 
 func main() {
+	newRandomCard()
 	go startHTTPServer()
-	go newRandomCard()
+	go dailyReset()
 	select {}
 }
 
@@ -84,4 +86,19 @@ func newRandomCard() {
 	utils.Sorted_list(new_card)
 	current_daily = new_card
 	mu.Unlock()
+}
+
+func dailyReset() {
+	for {
+		now := time.Now().UTC()
+		nextReset := time.Date(now.Year(), now.Month(), now.Day(), 6, 0, 0, 0, time.UTC)
+		if nextReset.Before(now) {
+			nextReset = nextReset.Add(24 * time.Hour)
+		}
+
+		durationUntilReset := time.Until(nextReset)
+		fmt.Printf("Next daily reset scheduled in: %s\n", durationUntilReset)
+		time.Sleep(durationUntilReset)
+		newRandomCard()
+	}
 }
