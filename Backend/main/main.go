@@ -50,6 +50,9 @@ func startHTTPServer() {
 
 // Replace this with your logic to generate suggestions
 func getSuggestions(query string) []string {
+	if len(query) > 1000 {
+		return make([]string, 0)
+	}
 	cardsList := make([]string, 0)
 	cards := utils.SearchCards(query)
 	cardsList = append(cardsList, cards)
