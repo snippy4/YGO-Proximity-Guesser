@@ -15,46 +15,39 @@
     </nav>
 <main>
     <h1>How it works</h1>
-    <h2>The inspirtaion</h2>
+    <h2>The Idea</h2>
     <p>
-        I was playing a word guessing game called proximity, and in my frustration at how stupid words can be to guess thought that it would be way cooler and more interesting
-        if that game existed for yugioh cards. I then remembered I could just make it and so here we are.
+        The idea for this project was taken from some online word geussing games, namely proximity and contexto. I wanted to implement these games
+        but for yugioh cards instead of words. I decided that the most intuitive idea for how 'close' two cards are would be how frequently the
+        two cards are played together, as this means cards that players often view as linked to each other would be very close.
     </p>
     
-    <h2>The concept</h2>
+    <h2>Creating the Network</h2>
     <p>
-        In order to make a guessing game where you guess cards based on their proximity to one another I needed some kind of way of determining the proximity from one card
-        to another. I decided the most intuitive answer to that question was how often cards are played together. Thankfully large databases of decks such as YGOPRODeck exist
-        and so I could build a really large list of decks really easily.
+        The first step was to aquire a large number of decks, and the lists of cards in each of them. For this I used a large number of decks from ygoprodeck.com. A large
+        number of decks however were 'too casual' or anime focused decks, I removed a large number of these from the database by blacklisting specific cards (swords of revealing light, 
+        the god cards, etc). These choices were made to keep the highest number of playable decks possible whilst removing decks with a large number of
+        less meaningful card choices. After this I created a network of cards with edges weighted with the number of times each set of card appears together.
+        It looks something like this, but much larger:
     </p>
-    <h2>The Processing</h2>
+    <img src="assets/network.png"></img>
     <p>
-        After aquiring a large number of decks I then needed to process this information into something more meaningful. This is where a lot of the fun comes in. Firstly I
-        took the large list of decks, each being a list of card IDs, and created a large weighted graph out of them with each node being a card and each edge being a connection
-        of cards that have been played together with a weighting of the number of times they appear together. Then this large weighted graph can be processed into some even
-        more meaningful information by adjusting the edge weightings from being the number of times they appear together to a proximity weighting. In order to do this I computed
-        the pagerank importance of each card and then adjusted the weighting of the edge as so:
+       This network is now ready to be turned from the absolute number of times two cards are played together to proximity values. The formula for this looks somewhat like
+       this (but is being adjusted):
     </p>
-    <img src="assets/Importance.png"></img>
-    <h2>The Game</h2>
-    <p>
-        Now I have a network of cards each with a proximity value connecting them I can actually make the gameplay for the game. Step 1 is to select a 'random' card from the 
-        network. Now if any and every card could get selected it could lead to some unfun games where the card is some random card someone put in their blue-eyes deck in 2017
-        one time and no one has heard of since. In order to prevent this being the case I took a slightly overkill approach to card selection. The basic idea is that starting 
-        at a random card in the graph given it has enough connections, a 'metropolis random walk' is performed. This can be simplified to moving between random nodes with the
-        probablity of actually going to a given node once its selected being proportional to the number of connections it has. One problem with this approach is that is highly values
-        cards that have many connections, such as Maxx "C" or Monster Reborn. In order to prevent games from being these massively over represented staples as often I used a different
-        probablity function. Changing the probability to be quadratic in the number of connections rather than proportional makes for more interesting selections more often. The function
-        I went with looks a little like this:
-    </p>
-    <img src="assets/probability function.png"/>
-    <p>
-        Once a card has been selected I then produce the list of cards that have been played with it. Of course it was a bit too naive to simply produce a list of all the
-        connections without any processing as many of the proximity values would be difficult to interpret and would scale massively the closer to the card you get. In order
-        to fix this I first log all of the proximity values in order to make the values more linear and so guesses would provide more meaningful levels of closeness. Then the
-        values are normalized so that they can be easily interpreted and displayed. After all of this the sorted list of connections for the card is then saved and drawn from 
-        each time a guess is made.
-    </p>
+    <img src="assets/Importance.png"/>
+   <h2>Creating the Game</h2>
+   <p>
+    Now that I have a network of proximity values I can create the actual gameplay. Firstly a random card needs to be chosen, but it is important to chose a card that
+    is interesting to guess and people may know, but not a card too popular that wont be interesting to guess as often. To do this I used a 'metropolis random walk'. In 
+    order to make sure cards that are too popular dont get visited as often however the probability function for the walk was made quadratic instead, and looks similar to this:
+   </p>
+   <img src="assets/probability function.png"/>
+   <p>
+    Then once a random card is selected the server produces a sorted list of the proximity to all of the other cards it has connections to. Some processing is then done in
+    order to make this value more meaningful, firstly all of the values are logged in order to make the values from guessing more linear. Then the values are normalized 
+    so that they can be interpreted properly by the game.
+   </p>
     </main>
 </body>
 </html>
