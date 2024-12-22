@@ -28,6 +28,8 @@
                     suggestionsDiv.innerHTML = ''; // Clear previous suggestions
 
                     // Display up to 5 suggestions with card name and images
+                    console.log(suggestions)
+                    suggestions = suggestions.filter(item => !previousSearches.some(item2 => item.id == item2.id))
                     suggestions.slice(0, 10).forEach(suggestion => {
                         const cardContainer = document.createElement('div');
                         cardContainer.style.display = 'flex';
@@ -100,10 +102,13 @@
                         } else {
                             display = "At least someone played these cards together?";
                         }
-                        if (!(previousSearches.some(e => e.id == result.id))){
+                        
+                    }else{
+                        ParsedValue = 0.0
+                    }
+                    if (!(previousSearches.some(e => e.id == result.id))){
                             previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
                         }
-                    }
 
                     // Update the "Last Guess" display
                     const lastGuessDiv = document.getElementById('last-guess');
@@ -182,6 +187,7 @@
             progressBar.style.borderRadius = '10px';
             progressBar.style.overflow = 'hidden';
 
+            if (search.value != 0){
             const progressFill = document.createElement('div');
             progressFill.style.height = '100%';
             progressFill.style.width = `${search.value * 100}%`; // Fill percentage
@@ -189,7 +195,7 @@
             progressFill.style.transition = 'width 0.5s ease'; // Smooth animation
 
             progressBar.appendChild(progressFill);
-
+            }
             // Append components to container
             container.appendChild(img);
             const textAndBar = document.createElement('div');
