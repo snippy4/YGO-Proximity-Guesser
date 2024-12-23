@@ -10,7 +10,7 @@ def load_json(file_path):
 def build_co_occurrence_matrix(decks):
     co_occurrence = defaultdict(lambda: defaultdict(int))
     blacklist = ["10000000", "10000010", "10000020", "14315573", "55144522", "4206964", "69890967", "32491822", "6007213",
-                 "71625222", "70781052", "62279055", "340521"]
+                 "71625222", "70781052", "62279055", "340521", "79571449", "97590747"]
     filtered = 0
     for deck in decks:
         skip = False
