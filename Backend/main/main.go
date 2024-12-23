@@ -15,7 +15,6 @@ var (
 	mu            sync.Mutex
 )
 
-// Response structures
 type SuggestionResponse struct {
 	Suggestions []string `json:"suggestions"`
 }
@@ -35,33 +34,33 @@ func main() {
 func startHTTPServer() {
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("q")
-		suggestions := getSuggestions(query) // Replace with your logic
+		suggestions := getSuggestions(query)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(suggestions)
 	})
 
 	http.HandleFunc("/select", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("q")
-		result := getResult(query) // Replace with your logic
+		result := getResult(query)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
 	})
 
 	http.HandleFunc("/hint", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("q")
-		result := getHint(query) // Replace with your logic
+		result := getHint(query)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
 	})
 
 	http.HandleFunc("/answer", func(w http.ResponseWriter, r *http.Request) {
-		result := utils.CardByID(current_daily) // Replace with your logic
+		result := utils.CardByID(current_daily)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
 	})
 
 	http.HandleFunc("/list", func(w http.ResponseWriter, r *http.Request) {
-		result := getList() // Replace with your logic
+		result := getList()
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
 	})
@@ -69,7 +68,6 @@ func startHTTPServer() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// Replace this with your logic to generate suggestions
 func getSuggestions(query string) []string {
 	if len(query) > 1000 {
 		return make([]string, 0)
@@ -80,10 +78,9 @@ func getSuggestions(query string) []string {
 	return cardsList
 }
 
-// Replace this with your logic to return a key-value pair
 func getResult(query string) map[string]string {
 	mu.Lock()
-	cardsJSON := utils.SearchCards(query) // Call the modified function with query input
+	cardsJSON := utils.SearchCards(query)
 
 	var cards []utils.Card
 	err := json.Unmarshal([]byte(cardsJSON), &cards)

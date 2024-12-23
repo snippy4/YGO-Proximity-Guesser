@@ -15,7 +15,6 @@ func weightedQuadratic(x, max float64) float64 {
 	center := 0.45 * max
 	scale := 0.75 * max * 0.6
 
-	// Quadratic formula
 	return math.Max(0, 1-math.Pow((x-center)/scale, 2))
 }
 
@@ -47,7 +46,6 @@ func Random_node() (node string) {
 	current_node = strings.ReplaceAll(current_node, "'", "")
 	degree := make(map[string]float64)
 
-	// Iterate over the edges
 	for edge, _ := range data {
 		u, v := strings.ReplaceAll(strings.Split(strings.Trim(edge, "() "), ",")[0], "'", ""), strings.ReplaceAll(strings.Split(strings.Trim(edge, "()"), ",")[1], "'", "")
 		degree[u]++
@@ -69,7 +67,7 @@ func Random_node() (node string) {
 		}
 	}
 
-	// Metropolis walk
+	// metropolis walk
 	fmt.Println(current_node)
 	for i := 0; i < 30; i++ {
 		edges := make([]string, 0)

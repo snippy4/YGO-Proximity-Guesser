@@ -13,14 +13,12 @@ import (
 )
 
 func Sorted_list(input string) {
-	// Read the JSON file
 	file, err := os.Open("proximity.json")
 	if err != nil {
 		log.Fatalf("Failed to open file: %v", err)
 	}
 	defer file.Close()
 
-	// Parse the JSON into a map
 	var data map[string]float64
 	bytes, err := io.ReadAll(file)
 	if err != nil {
@@ -32,7 +30,6 @@ func Sorted_list(input string) {
 		log.Fatalf("Failed to parse JSON: %v", err)
 	}
 
-	// Filter the map to include only keys containing "id"
 	filtered := make(map[string]float64)
 	for key, value := range data {
 		if strings.Contains(key, input) {
@@ -51,7 +48,6 @@ func Sorted_list(input string) {
 	}
 	w_max = math.Log(w_max)
 	w_min = math.Log(w_min)
-	// Convert the filtered map to a slice of key-value pairs for sorting
 	type kv struct {
 		Key   string
 		Value float64
@@ -62,7 +58,6 @@ func Sorted_list(input string) {
 		sorted = append(sorted, kv{Key: k, Value: (math.Log(v) - w_min) / (w_max - w_min)})
 	}
 
-	// Sort the slice by values
 	sort.Slice(sorted, func(i, j int) bool {
 		return sorted[i].Value < sorted[j].Value
 	})
@@ -74,7 +69,6 @@ func Sorted_list(input string) {
 	}
 	defer newfile.Close()
 
-	// Print the sorted results
 	writer := bufio.NewWriter(newfile)
 	lines := len(sorted) - 1
 	for i, _ := range sorted {

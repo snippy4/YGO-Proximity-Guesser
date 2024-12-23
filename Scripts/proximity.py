@@ -1,9 +1,7 @@
 import networkx as nx
 import json
-import math
 
 def compute_relative_strength(graph, importance_metric='pagerank'):
-    # Compute node importance based on the chosen metric
     if importance_metric == 'degree':
         importance = dict(graph.degree(weight='weight'))
     elif importance_metric == 'weighted_degree':
@@ -13,32 +11,28 @@ def compute_relative_strength(graph, importance_metric='pagerank'):
     else:
         raise ValueError("Unsupported importance metric")
     
-    # Compute relative strengths
+    # adjust weights to account for staple cards
     relative_strengths = {}
     for u, v, data in graph.edges(data=True):
         weight = data.get('weight', 1.0)
         imp_u = importance[u]
         imp_v = importance[v]
-        relative_strength = weight / ((imp_u + imp_v)**1.5)  # Example formula
+        relative_strength = weight / ((imp_u + imp_v)**1.5)  
         relative_strengths[(u, v)] = relative_strength
     
     return relative_strengths
 
 def normalize_weights(weights):
-    # Extract all weight values
     values = list(weights.values())
     w_min = min(values)
     w_max = max(values)
     
-    # Avoid division by zero
     if w_max == w_min:
-        return {key: 0.5 for key in weights}  # If all values are equal, normalize to 0.5
+        return {key: 0.5 for key in weights}  
     
-    # Normalize each weight
     normalized = {key: value / w_max for key, value in weights.items()}
     return normalized
 
-# Example usage
 G = nx.Graph()
 with open("output.csv") as network:
     for edge in network:

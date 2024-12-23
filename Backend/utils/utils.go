@@ -11,7 +11,6 @@ import (
 	"strings"
 )
 
-// CardSet represents the card set details
 type CardSet struct {
 	SetName       string `json:"set_name"`
 	SetCode       string `json:"set_code"`
@@ -20,39 +19,33 @@ type CardSet struct {
 	SetPrice      string `json:"set_price"`
 }
 
-// Card represents a single card's details
 type Card struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	YgoProDeckURL string `json:"ygoprodeck_url"`
 }
 
-// CardData represents the top-level structure
 type CardData struct {
 	Data []Card `json:"data"`
 }
 
 func GetCard(cardName string) string {
-	// Open the JSON file
 	file, err := os.Open("cards.json")
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Read the file contents
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
-	// Parse the JSON into the CardData struct
 	var cardData CardData
 	if err := json.Unmarshal(byteValue, &cardData); err != nil {
 		log.Fatalf("Error unmarshalling JSON: %v", err)
 	}
 
-	// Search for a card by name
 	targetName := cardName
 	var found *Card
 	for _, card := range cardData.Data {
@@ -62,7 +55,6 @@ func GetCard(cardName string) string {
 		}
 	}
 
-	// Print the result
 	if found != nil {
 		fmt.Printf("Found card: %+v\n", *found)
 	} else {
@@ -74,26 +66,22 @@ func GetCard(cardName string) string {
 }
 
 func SearchCards(cardName string) string {
-	// Open the JSON file
 	file, err := os.Open("cards.json")
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Read the file contents
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
-	// Parse the JSON into the CardData struct
 	var cardData CardData
 	if err := json.Unmarshal(byteValue, &cardData); err != nil {
 		log.Fatalf("Error unmarshalling JSON: %v", err)
 	}
 
-	// Collect all cards containing cardName in their name
 	var matchedCards []Card
 	for _, card := range cardData.Data {
 		if strings.Contains(strings.ToLower(card.Name), strings.ToLower(cardName)) {
@@ -101,7 +89,6 @@ func SearchCards(cardName string) string {
 		}
 	}
 
-	// Return the result
 	if len(matchedCards) > 0 {
 		response, err := json.Marshal(matchedCards)
 		if err != nil {
@@ -114,22 +101,20 @@ func SearchCards(cardName string) string {
 }
 
 func FindValueByID(id string, answer string) string {
-	// Open the JSON file
 	if id == answer {
 		return "Correct"
 	}
-	file, err := os.Open("data/" + answer + " sorted list.txt") // Replace with your JSON file name
+	file, err := os.Open("data/" + answer + " sorted list.txt")
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	// Search for the ID in the keys
 	place := 20
 	for scanner.Scan() {
 		key, value := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
-		ids := strings.Trim(key, "()") // Remove parentheses from the key
+		ids := strings.Trim(key, "()")
 		idParts := strings.Split(ids, ",")
 		if len(idParts) == 2 {
 			id1 := strings.TrimSpace(idParts[0])
@@ -146,31 +131,26 @@ func FindValueByID(id string, answer string) string {
 		place--
 	}
 
-	// If no match is found
 	return "No matching value found"
 }
 
 func CardByID(id string) string {
-	// Open the JSON file
 	file, err := os.Open("cards.json")
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Read the file contents
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
-	// Parse the JSON into the CardData struct
 	var cardData CardData
 	if err := json.Unmarshal(byteValue, &cardData); err != nil {
 		log.Fatalf("Error unmarshalling JSON: %v", err)
 	}
 
-	// Collect all cards containing cardName in their name
 	var matchedCards []Card
 	for _, card := range cardData.Data {
 		if strconv.Itoa(card.ID) == id {
@@ -178,7 +158,6 @@ func CardByID(id string) string {
 		}
 	}
 
-	// Return the result
 	if len(matchedCards) > 0 {
 		response, err := json.Marshal(matchedCards)
 		if err != nil {
