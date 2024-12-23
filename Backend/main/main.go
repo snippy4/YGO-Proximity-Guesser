@@ -54,6 +54,12 @@ func startHTTPServer() {
 		json.NewEncoder(w).Encode(result)
 	})
 
+	http.HandleFunc("/answer", func(w http.ResponseWriter, r *http.Request) {
+		result := utils.CardByID(current_daily) // Replace with your logic
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
 
