@@ -47,6 +47,13 @@ func startHTTPServer() {
 		json.NewEncoder(w).Encode(result)
 	})
 
+	http.HandleFunc("/hint", func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		result := getHint(query) // Replace with your logic
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -104,4 +111,18 @@ func dailyReset() {
 		time.Sleep(durationUntilReset)
 		newRandomCard()
 	}
+}
+
+func getHint(q string) string {
+	mu.Lock()
+	hint := utils.GetHint(q, current_daily)
+	hintJSON := utils.CardByID(hint)
+	var cards []utils.Card
+	err := json.Unmarshal([]byte(hintJSON), &cards)
+	if err != nil {
+		fmt.Println(err)
+	}
+	hintName := cards[0].Name
+	mu.Unlock()
+	return hintName
 }

@@ -149,3 +149,105 @@ func FindValueByID(id string, answer string) string {
 	// If no match is found
 	return "No matching value found"
 }
+
+func CardByID(id string) string {
+	// Open the JSON file
+	file, err := os.Open("cards.json")
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Read the file contents
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	// Parse the JSON into the CardData struct
+	var cardData CardData
+	if err := json.Unmarshal(byteValue, &cardData); err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+
+	// Collect all cards containing cardName in their name
+	var matchedCards []Card
+	for _, card := range cardData.Data {
+		if strconv.Itoa(card.ID) == id {
+			matchedCards = append(matchedCards, card)
+		}
+	}
+
+	// Return the result
+	if len(matchedCards) > 0 {
+		response, err := json.Marshal(matchedCards)
+		if err != nil {
+			log.Fatalf("Error marshalling matched cards: %v", err)
+		}
+		return string(response)
+	} else {
+		return "[]"
+	}
+}
+
+func GetHint(closest string, answer string) string {
+	if closest == "" {
+		return "23434538"
+	}
+	file, err := os.Open("data/" + answer + " sorted list.txt")
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	closestPos := 9999
+	newPos := 0
+	for scanner.Scan() {
+		key, _ := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
+		ids := strings.Trim(key, "()")
+		idParts := strings.Split(ids, ",")
+		if len(idParts) == 2 {
+			id1 := strings.TrimSpace(idParts[0])
+			id1 = strings.ReplaceAll(id1, "'", "")
+			id2 := strings.TrimSpace(idParts[1])
+			id2 = strings.ReplaceAll(id2, "'", "")
+			if closest == id1 || closest == id2 {
+				closestPos = newPos
+			}
+		}
+		newPos++
+	}
+	if closestPos == 9999 {
+		return "23434538"
+	}
+	newPos = closestPos / 2
+	count := 0
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		log.Fatalf("Error seeking to start of file: %v", err)
+	}
+	if newPos == 0 {
+		newPos = 21
+	}
+	scanner = bufio.NewScanner(file)
+	for scanner.Scan() {
+		if count == newPos {
+			key, _ := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
+			ids := strings.Trim(key, "()")
+			idParts := strings.Split(ids, ",")
+			if len(idParts) == 2 {
+				id1 := strings.TrimSpace(idParts[0])
+				id1 = strings.ReplaceAll(id1, "'", "")
+				id2 := strings.TrimSpace(idParts[1])
+				id2 = strings.ReplaceAll(id2, "'", "")
+				if answer == id1 {
+					return id2
+				} else {
+					return id1
+				}
+			}
+		}
+		count++
+	}
+	return ""
+}

@@ -11,7 +11,7 @@
         async function onSearch(input) {
             if (input.length > 0) {
                 try {
-                    const response = await fetch(`https://ygoserver.ddns.net:8080/search?q=${encodeURIComponent(input)}`);
+                    const response = await fetch(`http://localhost:8080/search?q=${encodeURIComponent(input)}`);
                     let suggestions = await response.json();
 
                     // Check if suggestions is an array with a stringified JSON inside
@@ -28,7 +28,6 @@
                     suggestionsDiv.innerHTML = ''; // Clear previous suggestions
 
                     // Display up to 5 suggestions with card name and images
-                    console.log(suggestions)
                     suggestions = suggestions.filter(item => !previousSearches.some(item2 => item.id == item2.id))
                     suggestions.slice(0, 10).forEach(suggestion => {
                         const cardContainer = document.createElement('div');
@@ -70,69 +69,108 @@
             }
         }
 
-        async function onEnter() {
-            const inputField = document.getElementById('search-bar');
-            const input = inputField.value;
+        let guessCount = 0; // Initialize the guess count
 
-            if (input.length > 0) {
-                try {
-                    const response = await fetch(`https://ygoserver.ddns.net:8080/select?q=${encodeURIComponent(input)}`);
-                    const result = await response.json();
+async function onEnter() {
+    const inputField = document.getElementById('search-bar');
+    const input = inputField.value;
 
-                    // Add to previous searches
-                    let ParsedValue = parseFloat(result.value);
-                    let display = "No connection :(";
-                    if (result.value === "Correct") {
-                            display = "Correct!";
-                            showModal(result.key, result.id); // Trigger modal
-                    } 
-                    if (!isNaN(ParsedValue)) {
-                        if (ParsedValue == 20) {
-                            display = "The Closest Card!";
-                        } else if (ParsedValue >= 1) {
-                            display = 20 - ParsedValue + " card(s) away!";
-                        } else if (ParsedValue >= 0.8) {
-                            display = "Flaming hot";
-                        } else if (ParsedValue >= 0.6) {
-                            display = "Warm";
-                        } else if (ParsedValue >= 0.4) {
-                            display = "Tepid";
-                        } else if (ParsedValue >= 0.2) {
-                            display = "Cold";
-                        } else {
-                            display = "At least someone played these cards together?";
-                        }
-                        
-                    }else{
-                        ParsedValue = 0.0
-                    }
-                    if (!(previousSearches.some(e => e.id == result.id))){
-                            previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
-                        }
+    if (input.length > 0) {
+        try {
+            const response = await fetch(`http://localhost:8080/select?q=${encodeURIComponent(input)}`);
+            const result = await response.json();
 
-                    // Update the "Last Guess" display
-                    const lastGuessDiv = document.getElementById('last-guess');
-                    lastGuessDiv.innerHTML = '';
-                    const latestGuess = { key: result.key, id: result.id, value: ParsedValue, display: display }; // Most recent guess
-                    if (latestGuess) {
-                        const lastGuessContainer = createSearchDisplay(latestGuess);
-                        lastGuessDiv.appendChild(lastGuessContainer);
-                    }
+            // Increment and update the guess count
+            guessCount++;
+            document.getElementById('guess-counter').textContent = `You have guessed ${guessCount} times.`;
 
-                    // Update the previous searches display
-                    previousSearches.sort((a, b) => b.value - a.value);
-                    const previousSearchesDiv = document.getElementById('previous-searches');
-                    previousSearchesDiv.innerHTML = '';
-                    previousSearches.forEach(search => {
-                        const searchContainer = createSearchDisplay(search);
-                        previousSearchesDiv.appendChild(searchContainer);
-                    });
-
-                    inputField.value = '';
-                    document.getElementById('suggestions').innerHTML = '';
-                } catch (error) {
-                    console.error("Error fetching results:", error);
+            // Add to previous searches
+            let ParsedValue = parseFloat(result.value);
+            let display = "No connection :(";
+            if (result.value === "Correct") {
+                display = "Correct!";
+                showModal(result.key, result.id); // Trigger modal
+            } 
+            if (!isNaN(ParsedValue)) {
+                if (ParsedValue == 20) {
+                    display = "The Closest Card!";
+                } else if (ParsedValue >= 1) {
+                    display = 20 - ParsedValue + " card(s) away!";
+                } else if (ParsedValue >= 0.8) {
+                    display = "Flaming hot";
+                } else if (ParsedValue >= 0.6) {
+                    display = "Warm";
+                } else if (ParsedValue >= 0.4) {
+                    display = "Tepid";
+                } else if (ParsedValue >= 0.2) {
+                    display = "Cold";
+                } else {
+                    display = "At least someone played these cards together?";
                 }
+                
+            } else {
+                ParsedValue = 0.0;
+            }
+
+            if (!(previousSearches.some(e => e.id == result.id))) {
+                previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
+            }
+
+            // Update the "Last Guess" display
+            const lastGuessDiv = document.getElementById('last-guess');
+            lastGuessDiv.innerHTML = '';
+            const latestGuess = { key: result.key, id: result.id, value: ParsedValue, display: display }; // Most recent guess
+            if (latestGuess) {
+                const lastGuessContainer = createSearchDisplay(latestGuess);
+                lastGuessDiv.appendChild(lastGuessContainer);
+            }
+
+            // Update the previous searches display
+            previousSearches.sort((a, b) => b.value - a.value);
+            const previousSearchesDiv = document.getElementById('previous-searches');
+            previousSearchesDiv.innerHTML = '';
+            previousSearches.forEach(search => {
+                const searchContainer = createSearchDisplay(search);
+                previousSearchesDiv.appendChild(searchContainer);
+            });
+
+            inputField.value = '';
+            document.getElementById('suggestions').innerHTML = '';
+        } catch (error) {
+            console.error("Error fetching results:", error);
+        }
+    }
+}
+
+async function getHint() {
+            if (previousSearches.length === 0) {
+                try {
+                const response = await fetch(`http://localhost:8080/hint?q=23434538`);
+                const hint = await response.json();
+                if (hint) {
+                    document.getElementById('search-bar').value = hint;
+                    onEnter(); // Automatically search using the hint
+                } else {
+                    console.error("Invalid hint received:", hint);
+                }
+            } catch (error) {
+                console.error("Error fetching hint:", error);
+            }
+            return
+            }
+
+            const firstGuessId = previousSearches[0].id;
+            try {
+                const response = await fetch(`http://localhost:8080/hint?q=${firstGuessId}`);
+                const hint = await response.json();
+                if (hint) {
+                    document.getElementById('search-bar').value = hint;
+                    onEnter(); // Automatically search using the hint
+                } else {
+                    console.error("Invalid hint received:", hint);
+                }
+            } catch (error) {
+                console.error("Error fetching hint:", error);
             }
         }
 
@@ -145,6 +183,7 @@
                 <img src="https://card.yugioh-api.com/${cardId}/image" alt="${cardName}">
                 <h2>Congratulations!</h2>
                 <p>You guessed today's card: <strong>${cardName}</strong></p>
+                <p>It took ${guessCount} guesses</p>
                 <button class="close-btn" onclick="closeModal()">Close</button>
             `;
 
@@ -255,14 +294,19 @@
         <a href="how-to-play.html" >How to Play</a>
         <a href="how-it-works.html">How It Works</a>
     </nav>
-
+    <main>
     <h1>Guess Card</h1>
     <input type="text" id="search-bar" placeholder="Type to search..." autocomplete="off">
     <div id="suggestions" style="margin-top: 10px;"></div>
-    <h2>Last Guess</h2>
+    <h2>Previous Guess</h2>
+    <p id="guess-counter" style="margin-top: 10px; max-width: fit-content; margin-left: auto; margin-right: auto;">You have guessed 0 times.</p>
     <div id="last-guess" style="margin-top: 10px;"></div>
-    <h2>Previous Guesses</h2>
+    <div class="hint-container">
+        <button class="hint-button" onclick="getHint()">Get Hint</button>
+    </div>
+        <h2>Closest Guesses</h2>
     <div id="previous-searches" style="margin-top: 10px;"></div>
+    </main>
     <div id="congrats-modal" class="modal">
         <div id="modal-content" class="modal-content">
             <!-- Content populated dynamically -->
