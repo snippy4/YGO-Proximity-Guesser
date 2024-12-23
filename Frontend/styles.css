@@ -272,6 +272,22 @@ main p {
     background-color: #ffb866;
 }
 
+.show-closest-btn {
+    background-color: #ff9e41;
+    color: #1e1e2f;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.show-closest-btn:hover {
+    background-color: #ffb866;
+}
+
 /* Slide-in Animation */
 @keyframes slideDown {
     from {

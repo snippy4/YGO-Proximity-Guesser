@@ -268,6 +268,9 @@ func ListClosestsCards(answer string) string {
 		idParts := strings.Split(ids, ",")
 		if len(idParts) == 2 {
 			value = strings.ReplaceAll(value, " ", "")
+			if count < 20 {
+				value = strconv.Itoa(20 - count)
+			}
 			id1 := strings.TrimSpace(idParts[0])
 			id1 = strings.ReplaceAll(id1, "'", "")
 			id2 := strings.TrimSpace(idParts[1])
