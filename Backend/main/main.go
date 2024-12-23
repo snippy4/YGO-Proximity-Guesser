@@ -60,6 +60,12 @@ func startHTTPServer() {
 		json.NewEncoder(w).Encode(result)
 	})
 
+	http.HandleFunc("/list", func(w http.ResponseWriter, r *http.Request) {
+		result := getList() // Replace with your logic
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -131,4 +137,11 @@ func getHint(q string) string {
 	hintName := cards[0].Name
 	mu.Unlock()
 	return hintName
+}
+
+func getList() string {
+	mu.Lock()
+	list := utils.ListClosestsCards(current_daily)
+	mu.Unlock()
+	return list
 }

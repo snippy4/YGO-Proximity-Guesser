@@ -251,3 +251,35 @@ func GetHint(closest string, answer string) string {
 	}
 	return ""
 }
+
+func ListClosestsCards(answer string) string {
+	IDValuePairs := make(map[string]float64, 0)
+	file, err := os.Open("data/" + answer + " sorted list.txt")
+	if err != nil {
+		log.Fatalf("Error seeking to start of file: %v", err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	count := 0
+	for scanner.Scan() && count < 50 {
+		key, value := strings.Split(scanner.Text(), ":")[0], strings.Split(scanner.Text(), ":")[1]
+		ids := strings.Trim(key, "()")
+		idParts := strings.Split(ids, ",")
+		if len(idParts) == 2 {
+			value = strings.ReplaceAll(value, " ", "")
+			id1 := strings.TrimSpace(idParts[0])
+			id1 = strings.ReplaceAll(id1, "'", "")
+			id2 := strings.TrimSpace(idParts[1])
+			id2 = strings.ReplaceAll(id2, "'", "")
+			if answer == id1 {
+				IDValuePairs[id2], err = strconv.ParseFloat(value, 64)
+			} else {
+				IDValuePairs[id1], err = strconv.ParseFloat(value, 64)
+			}
+		}
+		count++
+	}
+	response, err := json.Marshal(IDValuePairs)
+	return string(response)
+}
