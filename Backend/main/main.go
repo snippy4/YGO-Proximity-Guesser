@@ -131,7 +131,12 @@ func getHint(q string) string {
 	if err != nil {
 		fmt.Println(err)
 	}
-	hintName := cards[0].Name
+	hintName := ""
+	if len(cards) == 0 {
+		fmt.Println("failed to find card: " + hint)
+	} else {
+		hintName = cards[0].Name
+	}
 	mu.Unlock()
 	return hintName
 }
