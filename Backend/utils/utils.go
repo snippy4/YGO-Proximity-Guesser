@@ -173,6 +173,9 @@ func GetHint(closest string, answer string) string {
 	if closest == "" {
 		return "23434538"
 	}
+	if closest == answer {
+		return answer
+	}
 	file, err := os.Open("data/" + answer + " sorted list.txt")
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
@@ -199,14 +202,14 @@ func GetHint(closest string, answer string) string {
 	if closestPos == 9999 {
 		return "23434538"
 	}
+	if closestPos == 0 {
+		closestPos = 42
+	}
 	newPos = closestPos / 2
 	count := 0
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
 		log.Fatalf("Error seeking to start of file: %v", err)
-	}
-	if newPos == 0 {
-		newPos = 21
 	}
 	scanner = bufio.NewScanner(file)
 	for scanner.Scan() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prototype Proxim Guess</title>
+    <title>Yu-Gi-Oh Proximity Game</title>
     <link rel="stylesheet" href="styles.css">
     <script>
         let previousSearches = [];
@@ -81,17 +81,15 @@ async function onEnter() {
             const result = await response.json();
 
             // Increment and update the guess count
-            guessCount++;
-            document.getElementById('guess-counter').textContent = `You have guessed ${guessCount} times.`;
 
             // Add to previous searches
             let ParsedValue = parseFloat(result.value);
             let display = "No connection :(";
             if (result.value === "Correct") {
                 display = "Correct!";
+                ParsedValue = 21
                 showModal(result.key, result.id); // Trigger modal
-            } 
-            if (!isNaN(ParsedValue)) {
+            } else if (!isNaN(ParsedValue)) {
                 if (ParsedValue == 20) {
                     display = "The Closest Card!";
                 } else if (ParsedValue >= 1) {
@@ -113,6 +111,8 @@ async function onEnter() {
             }
 
             if (!(previousSearches.some(e => e.id == result.id))) {
+                guessCount++;
+                document.getElementById('guess-counter').textContent = `You have guessed ${guessCount} times.`;
                 previousSearches.push({ key: result.key, id: result.id, value: ParsedValue, display: display });
             }
 
@@ -261,12 +261,10 @@ async function getHint() {
                     card.key = cardName; // Add the card name to the object
                 }
 
-                // Sort by similarity value (descending)
-                cardEntries.sort((a, b) => b.value - a.value);
 
                 // Add to previousSearches and update the UI
                 cardEntries.forEach((card) => {
-                    if (!previousSearches.some((search) => search.id === card.id)) {
+                    if (!previousSearches.some((search) => search.id == card.id)) {
                         previousSearches.push({
                             key: card.key,
                             id: card.id,
@@ -275,7 +273,7 @@ async function getHint() {
                         });
                     }
                 });
-
+                previousSearches.sort((a, b) => b.value - a.value);
                 // Update the previous guesses display
                 const previousSearchesDiv = document.getElementById('previous-searches');
                 previousSearchesDiv.innerHTML = ''; // Clear existing entries
@@ -306,7 +304,7 @@ async function getHint() {
                 <img src="https://card.yugioh-api.com/${cardId}/image" alt="${cardName}">
                 <h2>Congratulations!</h2>
                 <p>You guessed today's card: <strong>${cardName}</strong></p>
-                <p>It took ${guessCount} guesses</p>
+                <p>It took ${guessCount + 1} guesses</p>
                 <button class="close-btn" onclick="closeModal()">Close</button>
                 <button class="show-closest-btn" onclick="showClosestCards()">Show Closest Cards</button>
                 <div id="loading-indicator" style="display: none; text-align: center; font-size: 1.2em; color: gray;">
