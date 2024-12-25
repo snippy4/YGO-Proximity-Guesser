@@ -193,6 +193,7 @@ func GetHint(closest string, answer string) string {
 			id1 = strings.ReplaceAll(id1, "'", "")
 			id2 := strings.TrimSpace(idParts[1])
 			id2 = strings.ReplaceAll(id2, "'", "")
+			closest = strings.TrimSpace(closest)
 			if closest == id1 || closest == id2 {
 				closestPos = newPos
 			}
