@@ -150,7 +150,7 @@ func CardByID(id string) string {
 	if err := json.Unmarshal(byteValue, &cardData); err != nil {
 		log.Fatalf("Error unmarshalling JSON: %v", err)
 	}
-
+	id = strings.TrimSpace(id)
 	var matchedCards []Card
 	for _, card := range cardData.Data {
 		if strconv.Itoa(card.ID) == id {
@@ -169,7 +169,7 @@ func CardByID(id string) string {
 	}
 }
 
-func GetHint(closest string, answer string) string {
+func GetHint(closest string, answer string, failed bool) string {
 	if closest == "" {
 		return "23434538"
 	}
@@ -206,7 +206,11 @@ func GetHint(closest string, answer string) string {
 	if closestPos == 0 {
 		closestPos = 42
 	}
-	newPos = closestPos / 2
+	if !failed {
+		newPos = closestPos / 2
+	} else {
+		newPos = closestPos/2 + 1
+	}
 	count := 0
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {

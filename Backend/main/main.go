@@ -25,7 +25,8 @@ type SelectResponse struct {
 }
 
 func main() {
-	newRandomCard()
+	//newRandomCard()
+	current_daily = "23581825"
 	go startHTTPServer()
 	go dailyReset()
 	select {}
@@ -124,8 +125,9 @@ func dailyReset() {
 
 func getHint(q string) string {
 	mu.Lock()
-	hint := utils.GetHint(q, current_daily)
+	hint := utils.GetHint(q, current_daily, false)
 	hintJSON := utils.CardByID(hint)
+	fmt.Println(hintJSON)
 	var cards []utils.Card
 	err := json.Unmarshal([]byte(hintJSON), &cards)
 	if err != nil {
@@ -134,6 +136,18 @@ func getHint(q string) string {
 	hintName := ""
 	if len(cards) == 0 {
 		fmt.Println("failed to find card: " + hint)
+		hint = utils.GetHint(q, current_daily, true)
+		hintJSON = utils.CardByID(hint)
+		fmt.Println(hintJSON)
+		err = json.Unmarshal([]byte(hintJSON), &cards)
+		if err != nil {
+			fmt.Println(err)
+		}
+		if len(cards) == 0 {
+			return ""
+		} else {
+			hintName = cards[0].Name
+		}
 	} else {
 		hintName = cards[0].Name
 	}
