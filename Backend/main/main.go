@@ -24,11 +24,6 @@ type SelectResponse struct {
 	Value string `json:"value"`
 }
 
-type kv struct {
-	Key   string
-	Value float64
-}
-
 func main() {
 	newRandomCard()
 	go startHTTPServer()
@@ -109,6 +104,7 @@ func newRandomCard() {
 	//new_card := utils.Random_node()
 	new_card := "54807656"
 	utils.Sorted_list(new_card)
+	utils.CleanSortedList(new_card)
 	current_daily = new_card
 	mu.Unlock()
 }
