@@ -24,9 +24,13 @@ type SelectResponse struct {
 	Value string `json:"value"`
 }
 
+type kv struct {
+	Key   string
+	Value float64
+}
+
 func main() {
-	//newRandomCard()
-	current_daily = "23581825"
+	newRandomCard()
 	go startHTTPServer()
 	go dailyReset()
 	select {}
@@ -102,7 +106,8 @@ func getResult(query string) map[string]string {
 
 func newRandomCard() {
 	mu.Lock()
-	new_card := utils.Random_node()
+	//new_card := utils.Random_node()
+	new_card := "54807656"
 	utils.Sorted_list(new_card)
 	current_daily = new_card
 	mu.Unlock()
