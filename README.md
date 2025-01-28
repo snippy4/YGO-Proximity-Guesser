@@ -1,11 +1,10 @@
 # https://ygoproximity.com
 
-# Yu-Gi-Oh Card Guessing Game
 
 ## Technical Details:
  ### The idea:
   The idea of this project was to produce a card guessing game for yu-gi-oh cards based on the online web games [proximity](https://proximity.clevergoat.com/) and [contexto](https://contexto.me/). I decided that what would be the most intuitive measure of 'closeness' would be how frequently two given cards are played together. This would mean that the more often two cards appear together the closer they would be.
-  ### Step 1:
+  ### The network:
   The first step to this project is to produce a large information network of connections between cards and their relative closeness. In order to do this I first web scraped a large number of decks (currently around 60000). Each deck is stored as a list of card ids. Then I can go through the lists of card ids and produce a connection every time two cards appear together, the more times this happens the larger the weighting of the connection will be. During this process is when I filter out 'nonsense' decks, these are decks made by players that do not build decks with meaningful choices and is done by filtering out specific cards. In order to maintain the integrity of the network I try to only filter out decks that contain objectively terrible or anime focused cards. This graph is then used as the basis of the proximity network.
   ![image](Frontend/assets/network.png)
   This is where I take some creativity to try and make the game more fun. Under this current model, if a card is played really frequently in general (like in the case of 'maxx "c"' and other staple cards) it will be really close to every card. This doesnt really make sense if youre trying to think about 'closeness' so I adjust the weightings of all the connections as follows in order to try and adjust the weighting to represent cards that are played together **relative** to how often they are played in general.
