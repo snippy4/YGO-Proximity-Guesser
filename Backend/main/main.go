@@ -101,8 +101,7 @@ func getResult(query string) map[string]string {
 
 func newRandomCard() {
 	mu.Lock()
-	//new_card := utils.Random_node()
-	new_card := "54807656"
+	new_card := utils.Random_node()
 	utils.Sorted_list(new_card)
 	utils.CleanSortedList(new_card)
 	current_daily = new_card
