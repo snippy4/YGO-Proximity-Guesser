@@ -23,6 +23,7 @@ type Card struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	YgoProDeckURL string `json:"ygoprodeck_url"`
+	Type          string `json:"humanReadableCardType"`
 }
 
 type CardData struct {
@@ -272,4 +273,40 @@ func ListClosestsCards(answer string) string {
 	}
 	response, err := json.Marshal(IDValuePairs)
 	return string(response)
+}
+
+func CardTypeByID(id string) string {
+	file, err := os.Open("cards.json")
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	var cardData CardData
+	if err := json.Unmarshal(byteValue, &cardData); err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+
+	id = strings.TrimSpace(id)
+	var matchedCards []Card
+	for _, card := range cardData.Data {
+		if strconv.Itoa(card.ID) == id {
+			matchedCards = append(matchedCards, card)
+		}
+	}
+	fmt.Println(matchedCards)
+	if len(matchedCards) > 0 {
+		response, err := json.Marshal(matchedCards[0].Type)
+		if err != nil {
+			log.Fatalf("Error marshalling matched cards: %v", err)
+		}
+		return string(response)
+	} else {
+		return "[]"
+	}
 }

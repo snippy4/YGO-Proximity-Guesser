@@ -26,6 +26,9 @@ type SelectResponse struct {
 
 func main() {
 	newRandomCard()
+	//current_daily = "23434538"
+	//fmt.Println(utils.CardTypeByID(current_daily))
+	// testing code commented out
 	go startHTTPServer()
 	go dailyReset()
 	select {}
