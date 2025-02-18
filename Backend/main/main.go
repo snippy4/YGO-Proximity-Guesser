@@ -68,6 +68,12 @@ func startHTTPServer() {
 		json.NewEncoder(w).Encode(result)
 	})
 
+	http.HandleFunc("/bonus", func(w http.ResponseWriter, r *http.Request) {
+		result := getBonus()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -163,4 +169,11 @@ func getList() string {
 	list := utils.ListClosestsCards(current_daily)
 	mu.Unlock()
 	return list
+}
+
+func getBonus() string {
+	mu.Lock()
+	value := utils.CardTypeByID(current_daily)
+	mu.Unlock()
+	return value
 }

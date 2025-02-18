@@ -142,7 +142,7 @@ async function onEnter() {
     }
 }
 
-async function getHint() {
+        async function getHint() {
             if (previousSearches.length === 0) {
                 try {
                 const response = await fetch(`http://localhost:8080/hint?q=23434538`);
@@ -152,6 +152,38 @@ async function getHint() {
                     onEnter(); // Automatically search using the hint
                 } else {
                     console.error("Invalid hint received:", hint);
+                }
+            } catch (error) {
+                console.error("Error fetching hint:", error);
+            }
+            return
+            }
+
+            const firstGuessId = previousSearches[0].id;
+            try {
+                const response = await fetch(`http://localhost:8080/hint?q=${firstGuessId}`);
+                const hint = await response.json();
+                if (hint) {
+                    document.getElementById('search-bar').value = hint;
+                    onEnter(); // Automatically search using the hint
+                } else {
+                    console.error("Invalid hint received:", hint);
+                }
+            } catch (error) {
+                console.error("Error fetching hint:", error);
+            }
+        }
+
+
+        async function getBonusHint() {
+            if (previousSearches.length === 0) {
+                try {
+                const response = await fetch(`http://localhost:8080/bonus`);
+                const bonus = await response.json();
+                if (bonus) {
+                    document.getElementById('bonus-hint').innerHTML = `<h2 id="bonus">the hidden card is: ${bonus}</h2>`;
+                } else {
+                    console.error("Invalid hint received:", bonus);
                 }
             } catch (error) {
                 console.error("Error fetching hint:", error);
@@ -429,8 +461,12 @@ async function getHint() {
     <div class="hint-container">
         <button class="hint-button" onclick="getHint()">Get Hint</button>
         <button class="hint-button" onclick="getAnswer()">Give Up</button>
+
     </div>
-        <h2>Closest Guesses</h2>
+    <div class="hint-container" id="bonus-hint">
+        <button class="hint-button" onclick="getBonusHint()">Get Bonus Hint</button>    
+    </div>
+    <h2>Closest Guesses</h2>
     <div id="previous-searches" style="margin-top: 10px;"></div>
     </main>
     <div id="congrats-modal" class="modal">
