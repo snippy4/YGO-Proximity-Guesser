@@ -299,7 +299,6 @@ func CardTypeByID(id string) string {
 			matchedCards = append(matchedCards, card)
 		}
 	}
-	fmt.Println(matchedCards)
 	if len(matchedCards) > 0 {
 		response, err := json.Marshal(matchedCards[0].Type)
 		if err != nil {
