@@ -11,14 +11,6 @@ import (
 	"strings"
 )
 
-type CardSet struct {
-	SetName       string `json:"set_name"`
-	SetCode       string `json:"set_code"`
-	SetRarity     string `json:"set_rarity"`
-	SetRarityCode string `json:"set_rarity_code"`
-	SetPrice      string `json:"set_price"`
-}
-
 type Card struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
