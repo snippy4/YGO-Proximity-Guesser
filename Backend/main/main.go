@@ -23,11 +23,11 @@ type SelectResponse struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
-
+// this is a random 
 func main() {
 	newRandomCard()
-	//current_daily = "23434538"
-	//fmt.Println(utils.CardTypeByID(current_daily))
+	// current_daily = "23434538"
+	// fmt.Println(utils.CardTypeByID(current_daily))
 	// testing code commented out
 	go startHTTPServer()
 	go dailyReset()
@@ -97,7 +97,7 @@ func getResult(query string) map[string]string {
 		fmt.Println(err)
 	}
 	var card utils.Card
-	for _, cardselect := range cards {
+n	for _, cardselect := range cards {
 		if cardselect.Name == query {
 			card = cardselect
 		}
