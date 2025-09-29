@@ -97,7 +97,7 @@ func getResult(query string) map[string]string {
 		fmt.Println(err)
 	}
 	var card utils.Card
-n	for _, cardselect := range cards {
+	for _, cardselect := range cards {
 		if cardselect.Name == query {
 			card = cardselect
 		}
