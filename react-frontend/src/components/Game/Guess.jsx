@@ -12,7 +12,7 @@ function Guess({ cardId, cardName, closenessText, closenessValue }) {
       <Card cardId={cardId} cardName={cardName} />
       <div style={cardInfoStyle}>
         <div style={cardNameStyle}>
-          {cardName}: {closenessText}
+          {cardName} <br /> {closenessText}
         </div>
         <ClosnessBubble value={closenessValue} />
       </div>

@@ -3,19 +3,23 @@ export const guessContainerStyle = {
   alignItems: "center",
   backgroundColor: "#2e2e48",
   borderRadius: "5px",
-  padding: "10px",
-  marginBottom: "10px",
+  marginBottom: "5px",
+  padding: "5px",
+  border: "1px solid #444",
 };
 
 export const cardInfoStyle = {
   flex: 1,
   display: "flex",
   flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "space-between",
 };
 
 export const cardNameStyle = {
   color: "#e0e0e0",
   marginBottom: "5px",
+  fontWeight: "bold",
 };
 
 export const closenessStyle = {
@@ -24,11 +28,9 @@ export const closenessStyle = {
 };
 
 export const bubbleContainerStyle = {
-  width: "30px",
-  height: "30px",
+  width: "50px",
+  height: "50px",
   borderRadius: "50%",
   marginLeft: "10px",
   transition: "background 0.5s ease",
 };
-
-

@@ -1,15 +1,14 @@
 export const cardImageStyle = {
-  width: "50px",
-  height: "70px",
+  width: "100px",
+  height: "140px",
   borderRadius: "5px",
   border: "1px solid #444",
-  marginRight: "15px",
-  transition: "transform 0.3s ease",
+  marginRight: "0px",
+  transition: "transform 0.2s ease",
   cursor: "pointer",
 };
 
 export const cardImageHoverStyle = {
   ...cardImageStyle,
-  transform: "scale(3)",
-  animation: "wiggle 0.5s ease-in-out",
+  transform: "scale(2)",
 };
