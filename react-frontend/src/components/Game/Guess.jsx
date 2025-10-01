@@ -1,3 +1,4 @@
+import React from "react";
 import Card from "./Card";
 import ClosnessBubble from "./ClosnessBubble";
 import {
@@ -6,7 +7,12 @@ import {
   cardNameStyle,
 } from "./Guess.styles";
 
-function Guess({ cardId, cardName, closenessText, closenessValue }) {
+const Guess = React.memo(function Guess({
+  cardId,
+  cardName,
+  closenessText,
+  closenessValue,
+}) {
   return (
     <div style={guessContainerStyle}>
       <Card cardId={cardId} cardName={cardName} />
@@ -18,6 +24,6 @@ function Guess({ cardId, cardName, closenessText, closenessValue }) {
       </div>
     </div>
   );
-}
+});
 
 export default Guess;

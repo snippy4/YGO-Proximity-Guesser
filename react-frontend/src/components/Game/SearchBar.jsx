@@ -26,7 +26,7 @@ function SearchBar({ onSearch, onSelect }) {
           data = JSON.parse(data[0]);
         }
 
-        setSuggestions(data.slice(0, 5));
+        setSuggestions(data.slice(0, 10));
       } catch (error) {
         console.error("Search error:", error);
         setSuggestions([]);

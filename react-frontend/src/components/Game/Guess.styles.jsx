@@ -1,11 +1,12 @@
 export const guessContainerStyle = {
   display: "flex",
   alignItems: "center",
-  backgroundColor: "#2e2e48",
-  borderRadius: "5px",
-  marginBottom: "5px",
-  padding: "5px",
-  border: "1px solid #444",
+  backgroundColor: "#16213e",
+  borderRadius: "12px",
+  padding: "8px",
+  marginBottom: "8px",
+  border: "1px solid #2d3748",
+  transition: "all 0.2s ease",
 };
 
 export const cardInfoStyle = {
@@ -17,13 +18,13 @@ export const cardInfoStyle = {
 };
 
 export const cardNameStyle = {
-  color: "#e0e0e0",
-  marginBottom: "5px",
-  fontWeight: "bold",
+  color: "#e2e8f0",
+  fontSize: "0.9em",
+  fontWeight: "500",
 };
 
 export const closenessStyle = {
-  color: "#ff9e41",
+  color: "#a29bfe",
   fontSize: "0.9em",
 };
 

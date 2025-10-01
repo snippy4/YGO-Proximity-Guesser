@@ -8,7 +8,7 @@ const HeaderLink = ({ href, children }) => {
   return (
     <a
       href={href}
-      style={isHovered ? linkStyle : linkStyleHover}
+      style={isHovered ? linkStyleHover : linkStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

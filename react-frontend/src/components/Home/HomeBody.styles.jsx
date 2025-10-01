@@ -14,14 +14,13 @@ export const titleStyle = {
   marginBottom: "20px",
 };
 
-export const subTitleStyle = {
-  color: "#6c5ce7",
+export const guessCounterStyle = {
+  color: "#a29bfe",
   textAlign: "center",
-  marginBottom: "20px",
+  margin: "20px 0",
+  fontSize: "1.1em",
 };
 
-export const textStyle = {
-  color: "#e2e8f0",
-  lineHeight: "1.6",
-  marginBottom: "20px",
+export const guessListStyle = {
+  marginTop: "20px",
 };

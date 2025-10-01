@@ -1,23 +1,25 @@
 export const searchBarStyle = {
   width: "80%",
-  padding: "10px 15px",
+  padding: "12px 16px",
   fontSize: "1em",
-  border: "2px solid #444",
-  borderRadius: "5px",
-  backgroundColor: "#2a2a40",
-  color: "#e0e0e0",
+  border: "2px solid #2d3748",
+  borderRadius: "12px",
+  backgroundColor: "#16213e",
+  color: "#e2e8f0",
   outline: "none",
   margin: "20px auto",
   display: "block",
+  transition: "border-color 0.3s ease",
 };
 
 export const suggestionsContainerStyle = {
   width: "80%",
   margin: "0 auto",
-  backgroundColor: "#2e2e48",
-  borderRadius: "5px",
+  backgroundColor: "#16213e",
+  borderRadius: "12px",
   maxHeight: "300px",
   overflowY: "auto",
+  border: "1px solid #2d3748",
 };
 
 export const suggestionItemStyle = {
