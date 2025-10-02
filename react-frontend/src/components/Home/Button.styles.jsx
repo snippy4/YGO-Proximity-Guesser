@@ -11,3 +11,10 @@ export const buttonStyle = {
   margin: "10px",
   boxShadow: "0 4px 16px rgba(108, 92, 231, 0.3)",
 };
+
+export const buttonStyleHover = {
+  ...buttonStyle,
+  transform: "translateY(-2px)",
+  boxShadow: "0 6px 20px rgba(108, 92, 231, 0.4)",
+  backgroundColor: "#7f72e6",
+};

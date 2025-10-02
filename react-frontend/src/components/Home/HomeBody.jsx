@@ -28,7 +28,9 @@ function HomeBody() {
         closenessValue:
           result.value === "Correct" ? 21 : parseFloat(result.value) || 0,
       };
-
+      if (guesses.some((guess) => guess.cardId === newGuess.cardId)) {
+        return;
+      }
       setGuesses((prev) =>
         [newGuess, ...prev].sort((a, b) => b.closenessValue - a.closenessValue)
       );
